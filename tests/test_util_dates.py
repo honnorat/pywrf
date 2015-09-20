@@ -94,10 +94,13 @@ class TestAdvanceDate:
         d = datetime.datetime(1999, 1, 1)
         assert pud.advance_date(d) == d
 
+    def test_advance_day(self):
+        assert pud.advance_date("2015-01-01", 1) == pud.read_date("2015-01-02 00:00:00")
+        assert pud.advance_date("2015-01-01", 1.5) == pud.read_date("2015-01-02_12:00:00")
+        assert pud.advance_date("2015-01-01", 31) == pud.read_date("2015-02-01T00:00:00")
+
     def test_advance_hour(self):
         assert pud.advance_date(datetime.datetime(1999, 1, 1), 0, 1) == pud.read_date("1999-01-01T01:00:00")
-
-    def test_advance_day(self):
         assert pud.advance_date(datetime.datetime(1999, 12, 31, 18), 0, 6) == pud.read_date("20000101")
 
     def test_advance_back_one_day(self):
