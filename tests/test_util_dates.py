@@ -5,7 +5,7 @@ import datetime
 import pytest
 import sys
 
-sys.path.insert(1, '../')
+sys.path.insert(1, '..')
 
 import pywrf.util.dates as pud
 
