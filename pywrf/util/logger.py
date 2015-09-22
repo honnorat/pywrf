@@ -11,7 +11,7 @@ import sys
 import re
 import logging
 
-from pywrf.util.termcolor import colored
+from .termcolor import colored
 
 __all__ = ['create_logger', 'get_logger']
 
