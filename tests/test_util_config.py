@@ -54,12 +54,10 @@ map : {2: "b"}
 """
 
 
-def create_conf_inc(fname_1, fname_2):
+def create_conf_file(f_name, f_content):
     dir = tempfile.mkdtemp()
-    with open(os.path.join(dir, fname_1), "w") as f:
-        f.write(CONF_INC_1)
-    with open(os.path.join(dir, fname_2), "w") as f:
-        f.write(CONF_INC_2)
+    with open(os.path.join(dir, f_name), "w") as f:
+        f.write(f_content)
     return dir
 
 
@@ -78,6 +76,14 @@ class TestConfig:
         assert config["list2"] == [3, 3]
         assert config["mixed"] == [3, 3, 4]
         assert config["mixed2"] == [3, 3, "text"]
+
+    def test_file(self):
+        dir = create_conf_file("conf.yaml", CONF_FILE)
+        try:
+            config = ConfigStore(os.path.join(dir, "conf.yaml"))
+            assert config["string"] == "/home/data/"
+        finally:
+            shutil.rmtree(dir)
 
     def test_type(self):
         config = ConfigStore(io.StringIO(CONF_FILE))
@@ -114,11 +120,12 @@ class TestConfig:
         assert config["int"] == 10
         assert config["new"] == "new"
 
-    def test_file(self):
-        dir = create_conf_inc("conf1.yaml", "conf2.yaml")
-        os.environ["CALLED"] = os.path.join(dir, "conf2.yaml")
+    def test_include(self):
+        dir1 = create_conf_file("conf1.yaml", CONF_INC_1)
+        dir2 = create_conf_file("conf2.yaml", CONF_INC_2)
+        os.environ["CALLED"] = os.path.join(dir2, "conf2.yaml")
         try:
-            config = ConfigStore(os.path.join(dir, "conf1.yaml"))
+            config = ConfigStore(os.path.join(dir1, "conf1.yaml"))
             assert config["existing"] == 1
             assert config["imported"] == 3
             assert config["new"] == 4
@@ -128,7 +135,8 @@ class TestConfig:
             sod[1] = "a"
             assert config["map"] == sod
         finally:
-            shutil.rmtree(dir)
+            shutil.rmtree(dir1)
+            shutil.rmtree(dir2)
 
     def test_eval(self):
         config = ConfigStore(io.StringIO(CONF_EVAL))
