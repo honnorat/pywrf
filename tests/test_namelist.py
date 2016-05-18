@@ -5,12 +5,13 @@ import io
 import os
 import pytest
 import shutil
-import sys
 import tempfile
-sys.path.insert(1, '..')
 
-import pywrf
+from datetime import datetime
+
+from pywrf.namelist import Namelist
 from pywrf.namelist import WPSNamelist
+from pywrf.namelist import WRFNamelist
 from pywrf.util import ConfigStore
 
 
@@ -23,6 +24,26 @@ def create_conf(ndom=1):
     return conf
 
 
+class TestNamelist:
+
+    def test_default(self):
+        nml = Namelist()
+        nml.calc_values()
+        assert nml.date_s == datetime(2000, month=1, day=1)
+        assert nml.date_e == datetime(2000, month=1, day=1, hour=12)
+        assert nml.max_dom == 1
+
+
+    def test_fail(self):
+        nml = WPSNamelist()
+        nml.calc_values()
+        assert "not_here" not in nml
+        assert len(nml.section("iam_here")) == 0  # Actually creates the section
+        assert "iam_here" in nml
+        with pytest.raises(KeyError):
+            assert nml["still_not_here"] is None
+
+
 class TestWPSNamelist:
 
     def test_default(self):
@@ -32,16 +53,6 @@ class TestWPSNamelist:
         assert nml["geogrid"] is not None
         assert nml["ungrib"] is not None
         assert nml["metgrid"] is not None
-
-    def test_fail(self):
-        nml = WPSNamelist()
-        nml.calc_values()
-        assert "share" in nml
-        assert "not_here" not in nml
-        assert len(nml.section("iam_here")) == 0    # Actually creates the section
-        assert "iam_here" in nml
-        with pytest.raises(KeyError):
-            assert nml["still_not_here"] is None
 
     def test_share(self):
         nml = WPSNamelist(create_conf())
@@ -88,4 +99,15 @@ class TestWPSNamelist:
             nml.write(os.path.join(dir, "tmp.nml.txt"))
         finally:
             shutil.rmtree(dir)
+
+
+class TestWRFNamelist:
+
+    def test_default(self):
+        nml = WRFNamelist()
+        nml.calc_values()
+        assert nml["time_control"] is not None
+        assert nml["domains"] is not None
+        assert nml["dynamics"] is not None
+        assert nml["physics"] is not None
 

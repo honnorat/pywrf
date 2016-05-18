@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, string
-
 from f90nml import read as read_f90nml
 from f90nml.namelist import Namelist as NmlDict
 from f90nml.parser import merge_dicts
@@ -10,19 +8,7 @@ from f90nml.parser import merge_dicts
 from pywrf.util.config import ConfigStore
 from collections import OrderedDict
 
-
-def to_list(item, nb=1):
-    """ Transform item into a list of size nb """
-
-    # Transform string representing a list into an actual list
-    if isinstance(item, str) and item[0] == "[" and item[-1] == "]":
-        item = eval(item)
-
-    # Transform any non-list item into a list
-    if not isinstance(item, list):
-        item = nb*[item]
-
-    return item
+import pywrf.util.dates as pud
 
 
 class Namelist(object):
@@ -81,8 +67,8 @@ class Namelist(object):
         Is supposed to be overridden by a subclass.
         """
         self.max_dom = self.from_config("max_dom", 1)
-        self.date_s  = self.from_config("date_s", "2000-01-01 00:00")
-        self.date_e  = self.from_config("date_e", "2000-01-01 12:00")
+        self.date_s  = pud.read_date(self.from_config("date_s", "2000-01-01 00:00"))
+        self.date_e  = pud.read_date(self.from_config("date_e", "2000-01-01 12:00"))
 
     def write(self, filename):
 

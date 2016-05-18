@@ -6,7 +6,6 @@ import os
 import pywrf.util.files as puf
 import pywrf.util.dates as pud
 
-from collections import OrderedDict
 from .namelist import Namelist
 from pywrf.util import ConfigStore
 from pywrf.util.logger import get_logger
