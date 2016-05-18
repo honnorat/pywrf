@@ -100,7 +100,7 @@ class TestConfig:
         assert config.get("rank1", "rank2.1") == 1
         assert config.get("rank1/rank2.2") == 2
 
-    def test_set(self):
+    def test_get(self):
         config = ConfigStore(io.StringIO(CONF_FILE))
         with pytest.raises(KeyError):
             n = config["new"]
@@ -112,6 +112,11 @@ class TestConfig:
         assert config.get("new") == 1
         assert config.get("new", default=0) == 1
         assert config.get("new", default="") == '1'
+
+    def test_set(self):
+        config = ConfigStore(io.StringIO(CONF_FILE))
+        config["int"] = 10
+        config["int"] = 11
 
     def test_update(self):
         config = ConfigStore(io.StringIO(CONF_FILE))

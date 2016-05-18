@@ -182,7 +182,7 @@ class ConfigStore:
     def __setitem__(self, key, value):
 
         if (key in self._values) and (value != self._values[key]):
-            log.debug("WARNING: %s: redefining directive '%s': ('%s' -> '%s')"
+            ConfigStore.log.debug("WARNING: %s: redefining directive '%s': ('%s' -> '%s')"
                       % (self._path, key, self._values[key], value))
 
         self._values[key] = value
